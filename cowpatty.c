@@ -5,15 +5,8 @@
  *
  * $Id: cowpatty.c 264 2009-07-03 15:15:50Z jwright $
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation. See COPYING for more
- * details.
- *
- * coWPAtty is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This software may be modified and distributed under the terms
+ * of the BSD-3-clause license. See the LICENSE file for details.
  */
 
 /*
@@ -299,7 +292,7 @@ int getpacket(struct capture_data *capdata)
 	/* Loop on pcap_next_ex until we get a packet we want, return from
 	 * this while loop.  This is kinda hack.
 	 */
-	while ((ret = pcap_next_ex(p, &h, (const u_char **)&packet)) 
+	while ((ret = pcap_next_ex(p, &h, (const u_char **)&packet))
 			&& ret > 0) {
 
 		/* Determine offset to EAP frame based on link type */
@@ -343,7 +336,7 @@ int getpacket(struct capture_data *capdata)
 		case DLT_PRISM_HEADER:
 			/* 802.11 frames with AVS header, AVS header is 144
 			 * bytes */
-			 
+
 			/* If this is not a data packet, get the next frame */
 			dot11 = ((struct dot11hdr *)(packet+144));
 			if (dot11->u1.fc.type != DOT11_FC_TYPE_DATA) {
@@ -372,14 +365,14 @@ int getpacket(struct capture_data *capdata)
 			*/
 			rtaphdr = (struct ieee80211_radiotap_header *)packet;
 			/* rtap is LE */
-			rtaphdrlen = le16_to_cpu(rtaphdr->it_len); 
-	
-			/* Sanity check on header length, 10 bytes is min 
+			rtaphdrlen = le16_to_cpu(rtaphdr->it_len);
+
+			/* Sanity check on header length, 10 bytes is min
 			   802.11 len */
 			if (rtaphdrlen > (h->len - 10)) {
 				return -2; /* Bad radiotap data */
 			}
-	
+
 			capdata->dstmac_offset = 4 + rtaphdrlen;
 			capdata->srcmac_offset = 10 + rtaphdrlen;
 
@@ -418,7 +411,7 @@ void handle_dot1x(struct crack_data *cdata, struct capture_data *capdata,
 
 	/* We're going after the last three frames in the 4-way handshake.
 	   In the last frame of the TKIP exchange, the authenticator nonce is
-	   omitted.  In cases where there is a unicast and a multicast key 
+	   omitted.  In cases where there is a unicast and a multicast key
 	   distributed, frame 4 will include the authenticator nonce.  In some
 	   cases however, there is no multicast key distribution, so frame 4 has
 	   no authenticator nonce.  For this reason, we need to capture information
@@ -457,7 +450,7 @@ void handle_dot1x(struct crack_data *cdata, struct capture_data *capdata,
 
 	if (cdata->ver == WPA_KEY_INFO_TYPE_HMAC_MD5_RC4) {
 		/* Check for WPA key, and pairwise key type */
-		if (eapolkeyhdr->type != 254 || 
+		if (eapolkeyhdr->type != 254 ||
 				(key_info & WPA_KEY_INFO_KEY_TYPE) == 0) {
 			return;
 		}
@@ -517,14 +510,14 @@ void handle_dot1x(struct crack_data *cdata, struct capture_data *capdata,
 	} else {
 
 		/* Check for frame 1 of the 4-way handshake */
-		if ((key_info & WPA_KEY_INFO_MIC) == 0 
+		if ((key_info & WPA_KEY_INFO_MIC) == 0
 		   && (key_info & WPA_KEY_INFO_ACK)
 		   && (key_info & WPA_KEY_INFO_INSTALL) == 0 ) {
 	                /* All we need from this frame is the authenticator nonce */
 			memcpy(cdata->anonce, eapolkeyhdr->key_nonce,
 				sizeof(cdata->anonce));
 			cdata->anonceset = 1;
- 
+
 		/* Check for frame 2 of the 4-way handshake */
 		} else if ((key_info & WPA_KEY_INFO_MIC)
 			  && (key_info & WPA_KEY_INFO_INSTALL) == 0
@@ -625,7 +618,7 @@ int nexthashrec(FILE * fp, struct hashdb_rec *rec)
 	int recordlength, wordlen;
 
 	if (fread(&rec->rec_size, sizeof(rec->rec_size), 1, fp) != 1) {
-	
+
 		perror("fread");
 		return -1;
 	}
@@ -683,10 +676,10 @@ void hmac_hash(int ver, u8 *key, int hashlen, u8 *buf, int buflen, u8 *mic)
 	}
 }
 
-int hashfile_attack(struct user_opt *opt, char *passphrase, 
+int hashfile_attack(struct user_opt *opt, char *passphrase,
 	struct crack_data *cdata)
 {
-	
+
 	FILE *fp;
 	int reclen, wordlen;
 	u8 pmk[32];
@@ -717,7 +710,7 @@ int hashfile_attack(struct user_opt *opt, char *passphrase,
 
 	/* Ensure selected SSID matches what's stored in the header record */
 	if (memcmp(hf_head.ssid, opt->ssid, hf_head.ssidlen) != 0) {
-		
+
 		memcpy(&headerssid, hf_head.ssid, hf_head.ssidlen);
 		headerssid[hf_head.ssidlen] = 0; /* NULL terminate string */
 
@@ -737,7 +730,7 @@ int hashfile_attack(struct user_opt *opt, char *passphrase,
 
 		/* nexthashrec returns the length of the record, test to ensure
 		   passphrase is greater than 8 characters */
-		wordlen = rec.rec_size - 
+		wordlen = rec.rec_size -
 			(sizeof(rec.pmk) + sizeof(rec.rec_size));
 		if (wordlen < 8) {
 			printf("Found a record that was too short, this "
@@ -767,7 +760,7 @@ int hashfile_attack(struct user_opt *opt, char *passphrase,
 		if (opt->verbose > 1) {
 			printf("Calculating PTK for \"%s\".\n", passphrase);
 		}
-		
+
 		if (opt->verbose > 2) {
 			printf("PMK is");
 			lamont_hdump(pmk, sizeof(pmk));
@@ -816,10 +809,10 @@ int hashfile_attack(struct user_opt *opt, char *passphrase,
 	return 1;
 }
 
-int dictfile_attack(struct user_opt *opt, char *passphrase, 
+int dictfile_attack(struct user_opt *opt, char *passphrase,
 	struct crack_data *cdata)
 {
-	
+
 	FILE *fp;
 	int fret;
 	u8 pmk[32];
@@ -854,8 +847,8 @@ int dictfile_attack(struct user_opt *opt, char *passphrase,
 
 		/*
 		 * Test length of word.  IEEE 802.11i indicates the passphrase
-		 * must be at least 8 characters in length, and no more than 63 
-		 * characters in length. 
+		 * must be at least 8 characters in length, and no more than 63
+		 * characters in length.
 		 */
 		if (fret < 8 || fret > 63) {
 			if (opt->verbose) {
@@ -878,7 +871,7 @@ int dictfile_attack(struct user_opt *opt, char *passphrase,
 		if (opt->verbose > 1) {
 			printf("Calculating PMK for \"%s\".\n", passphrase);
 		}
-		
+
 		pbkdf2_sha1(passphrase, opt->ssid, strlen(opt->ssid), 4096,
 			    pmk, sizeof(pmk), USECACHED);
 
@@ -1040,7 +1033,7 @@ int dictfile_attack(struct user_opt *opt, char *passphrase,
 		printstats(start, end, wordstested);
 		return 0;
 	} else {
-		printf("Unable to identify the PSK from the dictionary file. " 
+		printf("Unable to identify the PSK from the dictionary file. "
 	       		"Try expanding your\npassphrase list, and double-check"
 		        " the SSID.  Sorry it didn't work out.\n");
 		gettimeofday(&end, 0);
