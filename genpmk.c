@@ -1,9 +1,7 @@
 /*
  * genpmk - Generate a file with precomputed PMK's and words
  *
- * Copyright (c) 2005, Joshua Wright <jwright@hasborg.com>
- *
- * $Id: genpmk.c,v 4.1 2008-03-20 16:49:38 jwright Exp $
+ * Copyright (c) 2004-2018, Joshua Wright <jwright@hasborg.com>
  *
  * This software may be modified and distributed under the terms
  * of the BSD-3-clause license. See the LICENSE file for details.
@@ -26,7 +24,7 @@
 #include "sha1.h"
 
 #define PROGNAME "genpmk"
-#define VER "1.2"
+#define VER "1.3"
 
 /* Globals */
 int sig = 0;			/* Used for handling signals */

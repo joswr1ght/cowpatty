@@ -1,9 +1,7 @@
 /*
  * coWPAtty - Brute-force dictionary attack against WPA-PSK.
  *
- * Copyright (c) 2004-2005, Joshua Wright <jwright@hasborg.com>
- *
- * $Id: md5.h,v 4.1 2008-03-20 16:49:38 jwright Exp $
+ * Copyright (c) 2004-2018, Joshua Wright <jwright@hasborg.com>
  *
  * This software may be modified and distributed under the terms
  * of the BSD-3-clause license. See the LICENSE file for details.

@@ -1,9 +1,7 @@
 /*
  * coWPAtty - Brute-force dictionary attack against WPA-PSK.
  *
- * Copyright (c) 2004-2005, Joshua Wright <jwright@hasborg.com>
- *
- * $Id: cowpatty.h,v 4.3 2008-11-12 14:22:27 jwright Exp $
+ * Copyright (c) 2004-2018, Joshua Wright <jwright@hasborg.com>
  *
  * This software may be modified and distributed under the terms
  * of the BSD-3-clause license. See the LICENSE file for details.
