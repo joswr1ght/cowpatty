@@ -37,7 +37,7 @@ sha1: sha1.c sha1.h
 	$(CC) $(CFLAGS) sha1.c -c
 
 clean:
-	@rm $(PROGOBJ) $(PROG)
+	@rm -f $(PROGOBJ) $(PROG)
 
 strip:
 	@ls -l $(PROG)
