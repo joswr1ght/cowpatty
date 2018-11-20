@@ -13,37 +13,46 @@ CFLAGS		+= -O2
 LDLIBS		+= -lcrypto
 CFLAGS		+= -g3 -ggdb
 #CFLAGS		+= -static
-PROGOBJ		= md5.o sha1.o utils.o cowpatty.o genpmk.o
+PROGOBJ		= md5.o sha1.o utils.o
 PROG		= cowpatty genpmk
+MANUALS		= cowpatty.1 genpmk.1
 BINDIR		= /usr/local/bin
+MANDIR		= /usr/local/man/man1
 CC			= clang
 
-all: $(PROGOBJ) $(PROG)
+.PHONY: all clean strip install-man install-bin install
 
-cowpatty: common.h md5.c md5.h sha1.h cowpatty.c cowpatty.h sha1.c \
-            sha1.h utils.c utils.h utils.o md5.o sha1.o
-	$(CC) $(CFLAGS) cowpatty.c -o cowpatty utils.o md5.o sha1.o $(LDLIBS)
+all: $(PROG)
 
-genpmk: genpmk.c cowpatty.h utils.h sha1.h common.h utils.o sha1.o
-	$(CC) $(CFLAGS) genpmk.c -o genpmk utils.o sha1.o $(LDLIBS)
+cowpatty: cowpatty.c cowpatty.h $(PROGOBJ)
+	$(CC) $(CFLAGS) $< -o $@ $(PROGOBJ) $(LDLIBS)
 
-utils: utils.c utils.h
-	$(CC) $(CFLAGS) utils.c -c
+genpmk: genpmk.c cowpatty.h utils.o sha1.o
+	$(CC) $(CFLAGS) $< -o $@ utils.o sha1.o $(LDLIBS)
 
-md5: md5.c md5.h
-	$(CC) $(CFLAGS) md5.c -c
+utils.o: utils.c utils.h radiotap.h
+	$(CC) $(CFLAGS) $< -c
 
-sha1: sha1.c sha1.h
-	$(CC) $(CFLAGS) sha1.c -c
+md5.o: md5.c md5.h common.h
+	$(CC) $(CFLAGS) $< -c
+
+sha1.o: sha1.c sha1.h common.h
+	$(CC) $(CFLAGS) $< -c
 
 clean:
-	@rm -f $(PROGOBJ) $(PROG)
+	$(RM) $(PROGOBJ) $(PROG)
 
 strip:
 	@ls -l $(PROG)
 	@strip $(PROG)
 	@ls -l $(PROG)
 
-install: all
+install-man: $(MANUALS)
+	install -d $(DESTDIR)$(MANDIR)
+	install -m 644 $(MANUALS) $(DESTDIR)$(MANDIR)
+
+install-bin: $(PROG)
 	install -d $(DESTDIR)$(BINDIR)
 	install -m 755 $(PROG) $(DESTDIR)$(BINDIR)
+
+install: install-bin install-man
