@@ -169,7 +169,11 @@ struct crack_data {
 	u8 anonceset;
 	u8 keymicset;
 	u8 eapolframeset;
-	u8 replay_counter[8];
+	u8 replay_counter1[8];
+	u8 replay_counter2[8];
+	u8 replay_counter3[8];
+	u8 replay_counter4[8];
+	u8 counters;
 
 	int ver; /* Hashing algo, MD5 or AES-CBC-MAC */
 	int eapolframe_size;
